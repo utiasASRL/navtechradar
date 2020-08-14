@@ -1,0 +1,7 @@
+<launch>
+<group ns="talker1">
+
+<param name="param3" value="image_on" type="str" />
+<node name="talker1" pkg="nav_ross" type="talker1" output="screen"  />
+</group>
+</launch>

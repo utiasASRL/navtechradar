@@ -1,0 +1,3 @@
+<launch>
+<node name="convert" pkg="nav_ross" type="convert" output="screen"  />
+</launch>

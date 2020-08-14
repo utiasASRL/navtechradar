@@ -1,0 +1,86 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "iasdk",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "iasdk::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-iasdk-Debug-8dca505e4dd003e436eb.json",
+					"name" : "iasdk",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "iasdk_static::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-iasdk_static-Debug-3f312d5caac72ce882a0.json",
+					"name" : "iasdk_static",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "testclient_dynamic::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-testclient_dynamic-Debug-75c656888e26574b495e.json",
+					"name" : "testclient_dynamic",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "testclient_static::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-testclient_static-Debug-7b6de1a04197b8a145fe.json",
+					"name" : "testclient_static",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Local/Development/iasdk/cpp/out/build/x64-Debug",
+		"source" : "C:/Local/Development/iasdk/cpp"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 0
+	}
+}
