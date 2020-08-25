@@ -107,7 +107,12 @@ void FFTDataHandler(const FFTDataPtr_t& data)
 		for (size_t i = 0; i < data->Data.size(); i++) {
 			radar_image_polar.at<uchar>(bearing, i + 11) = data->Data[i];
 		}
-		// TODO: get UNIX time stamp for each azimuth
+		int64_t time = data->NTPSeconds;
+		time *= 1000000;
+		time += data->NTPSplitSeconds / 1000;
+		for (uint j = 0; j < 8; ++j) {
+			radar_image_polar.at<uchar>(bearing, j) = (time >> (j * 8));
+		}
 		radar_image_polar.at<uchar>(bearing, 9) = data->Azimuth / 256;
 		radar_image_polar.at<uchar>(bearing, 8) = data->Azimuth % 256;
 		// TODO: some azimuths may not be valid? Find if this data is retrieved somewhere
@@ -205,7 +210,7 @@ int32_t main(int32_t argc, char** argv)
 	
 	Helpers::Log("Test Client Starting");
 	
-	_radarClient = std::make_shared<RadarClient>("192.168.0.1");//10.161.210.73ONLINE RADAR 10.77.2.211 //LOCAL RADAR 192.168.0.1 127.0.0.1
+	_radarClient = std::make_shared<RadarClient>("192.168.3.111");//10.161.210.73ONLINE RADAR 10.77.2.211 //LOCAL RADAR 192.168.0.1 127.0.0.1
 	_radarClient->SetFFTDataCallback(std::bind(&FFTDataHandler, std::placeholders::_1));
 	_radarClient->SetConfigurationDataCallback(std::bind(&ConfigurationDataHandler, std::placeholders::_1));
 	_radarClient->Start();

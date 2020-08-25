@@ -2,4 +2,4 @@
 build/
 devel/
 install/
-.catkin_tools
+/.catkin_tools

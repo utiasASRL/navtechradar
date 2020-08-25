@@ -1,2 +1,4 @@
 *.log
 *.stderr
+/.catkin_tools
+ros/.catkin_tools/
