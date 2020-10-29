@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+#include <omp.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/Image.h>
 #include <opencv2/core.hpp>
@@ -16,15 +17,39 @@ void load_radar(cv::Mat raw_data, std::vector<int64_t> &timestamps, std::vector<
     valid = std::vector<bool>(N, true);
     int range_bins = 3360;
     fft_data = cv::Mat::zeros(N, range_bins, CV_32F);
+#pragma omp parallel
     for (int i = 0; i < N; ++i) {
         uchar* byteArray = raw_data.ptr<uchar>(i);
         timestamps[i] = *((int64_t *)(byteArray));
         azimuths[i] = *((uint16_t *)(byteArray + 8)) * 2 * M_PI / float(encoder_size);
+        // std::cout << azimuths[i] << std::endl;
         valid[i] = byteArray[10] == 255;
         for (int j = 0; j < range_bins; j++) {
             fft_data.at<float>(i, j) = (float)*(byteArray + 11 + j) / 255.0;
         }
     }
+    // std::cout << timestamps[0] << " " << timestamps[1] << std::endl;
+}
+
+float get_azimuth_index(std::vector<float> &azimuths, float azimuth) {
+    float mind = 1000;
+    float closest = 0;
+    for (uint i = 0; i < azimuths.size(); ++i) {
+        float d = fabs(azimuths[i] - azimuth);
+        if (d < mind) {
+            mind = d;
+            closest = i;
+        }
+    }
+    if (azimuths[closest] < azimuth) {
+        float delta = (azimuth - azimuths[closest]) / (azimuths[closest + 1] - azimuths[closest]);
+        closest += delta;
+    } else if (azimuths[closest] > azimuth){
+        float delta = (azimuths[closest] - azimuth) / (azimuths[closest] - azimuths[closest - 1]);
+        closest -= delta;
+    }
+
+    return closest;
 }
 
 void radar_polar_to_cartesian(std::vector<float> &azimuths, cv::Mat &fft_data, float radar_resolution,
@@ -53,6 +78,9 @@ void radar_polar_to_cartesian(std::vector<float> &azimuths, cv::Mat &fft_data, f
     cv::Mat angle = cv::Mat::zeros(cart_pixel_width, cart_pixel_width, CV_32F);
 
     float azimuth_step = azimuths[1] - azimuths[0];
+    // float azimuth_step = (M_PI / 200);
+    // azimuths[0] = 0;
+
 #pragma omp parallel for collapse(2)
     for (int i = 0; i < range.rows; ++i) {
         for (int j = 0; j < range.cols; ++j) {
@@ -65,7 +93,8 @@ void radar_polar_to_cartesian(std::vector<float> &azimuths, cv::Mat &fft_data, f
             float theta = atan2f(y, x);
             if (theta < 0)
                 theta += 2 * M_PI;
-            angle.at<float>(i, j) = (theta - azimuths[0]) / azimuth_step;
+            angle.at<float>(i, j) = get_azimuth_index(azimuths, theta);
+            // angle.at<float>(i, j) = (theta - azimuths[0]) / azimuth_step;
         }
     }
     if (interpolate_crossover) {
@@ -92,8 +121,8 @@ void callback(const sensor_msgs::ImageConstPtr & msg) {
 	cv::Mat polar_img;
 	load_radar(raw_data, timestamps, azimuths, valid, polar_img);
 	cv::Mat cart_img;
-    float cart_resolution = 0.25;
-    int cart_pixel_width = 1000;
+    float cart_resolution = 0.2980;
+    int cart_pixel_width = 838;
     bool interpolate_crossover = true;
     float radar_resolution = 0.0596;
     radar_polar_to_cartesian(azimuths, polar_img, radar_resolution, cart_resolution, cart_pixel_width,
@@ -110,8 +139,9 @@ void callback(const sensor_msgs::ImageConstPtr & msg) {
 int main(int32_t argc, char** argv) {
 	ros::init(argc, argv, "convert");
 	ros::NodeHandle nh;
+    std::cout << omp_get_num_threads() << std::endl;
 	pub = nh.advertise<sensor_msgs::Image>("/Navtech/Cartesian", 4);
-	sub = nh.subscribe("/talker1/Navtech/Polar", 2, &callback);
+	sub = nh.subscribe("/talker1/Navtech/Polar", 10, &callback);
 	ros::spin();
 	return 0;
 }

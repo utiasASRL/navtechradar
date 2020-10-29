@@ -83,9 +83,9 @@ void FFTDataHandler(const FFTDataPtr_t& data)
 			if (publish_image)															
 			{
 				header.seq = frame_number;        // user defined counter
-				header.stamp.sec =data->NTPSeconds;  // time
-				header.stamp.nsec=data->NTPSplitSeconds;
-				
+				header.stamp = ros::Time::now();
+				// header.stamp.sec =data->NTPSeconds;  // time
+				// header.stamp.nsec=data->NTPSplitSeconds;
 				sensor_msgs::ImagePtr PolarMsg = cv_bridge::CvImage(header, "mono8", radar_image_polar).toImageMsg();
 				PolarPublisher.publish(PolarMsg);
 				

@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 2.8.3)
 project(nav_ross)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+# add_compile_options(-fopenmp)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -W -O2")
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -22,7 +24,14 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   turtlesim
 )
+
 find_package(OpenCV 3.3.1 REQUIRED)
+find_package(OpenMP REQUIRED)
+
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+set(OMP_NUM_THREADS 8)
+
 ##find_package(OpenCV 4.2.0 EXACT REQUIRED PATHS C:/opencv)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -212,4 +221,4 @@ target_link_libraries(Mobile_Platform ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ia
 add_dependencies(Mobile_Platform nav_ross_generate_messages_cpp ${PROJECT_NAME}_gencfg ${devel2_pkg_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(convert convert.cpp)
-target_link_libraries(convert ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(convert ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${OpenMP_LIBRARIES})
