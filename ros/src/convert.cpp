@@ -93,8 +93,8 @@ void radar_polar_to_cartesian(std::vector<float> &azimuths, cv::Mat &fft_data, f
             float theta = atan2f(y, x);
             if (theta < 0)
                 theta += 2 * M_PI;
-            angle.at<float>(i, j) = get_azimuth_index(azimuths, theta);
-            // angle.at<float>(i, j) = (theta - azimuths[0]) / azimuth_step;
+            // angle.at<float>(i, j) = get_azimuth_index(azimuths, theta);
+            angle.at<float>(i, j) = (theta - azimuths[0]) / azimuth_step;
         }
     }
     if (interpolate_crossover) {
@@ -121,10 +121,10 @@ void callback(const sensor_msgs::ImageConstPtr & msg) {
 	cv::Mat polar_img;
 	load_radar(raw_data, timestamps, azimuths, valid, polar_img);
 	cv::Mat cart_img;
-    float cart_resolution = 0.2980;
-    int cart_pixel_width = 838;
+    float cart_resolution = 0.25;
+    int cart_pixel_width = 1000;
     bool interpolate_crossover = true;
-    float radar_resolution = 0.0596;
+    float radar_resolution = 0.04381;
     radar_polar_to_cartesian(azimuths, polar_img, radar_resolution, cart_resolution, cart_pixel_width,
         interpolate_crossover, cart_img);
 	// Convert to cartesian

@@ -12,6 +12,8 @@ for full license details.
 #include <chrono>
 #include <vector>
 #include <math.h>
+#include <string>
+#include <fstream>
 
 #include "ros/ros.h"
 #include "radarclient.h"
@@ -58,6 +60,8 @@ int encoder_size;
 int bin_size;
 int expected_rotation_rate;
 
+std::string fname("/home/asrl/radar_monitor.txt");
+
 
 void FFTDataHandler(const FFTDataPtr_t& data)
 {	
@@ -88,6 +92,11 @@ void FFTDataHandler(const FFTDataPtr_t& data)
 				// header.stamp.nsec=data->NTPSplitSeconds;
 				sensor_msgs::ImagePtr PolarMsg = cv_bridge::CvImage(header, "mono8", radar_image_polar).toImageMsg();
 				PolarPublisher.publish(PolarMsg);
+				std::fstream fout;
+				fout.open(fname, std::ios_base::out);
+				if (fout.is_open()) {
+					fout << header.stamp.sec;
+				}
 				
 			}
 
