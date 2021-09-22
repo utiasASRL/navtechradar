@@ -7,6 +7,7 @@
 
 ros::Publisher pub;
 ros::Subscriber sub;
+double radar_upgrade_time = 1632182400;
 
 void load_radar(cv::Mat raw_data, std::vector<int64_t> &timestamps, std::vector<float> &azimuths,
     std::vector<bool> &valid, cv::Mat &fft_data) {
@@ -15,7 +16,7 @@ void load_radar(cv::Mat raw_data, std::vector<int64_t> &timestamps, std::vector<
     timestamps = std::vector<int64_t>(N, 0);
     azimuths = std::vector<float>(N, 0);
     valid = std::vector<bool>(N, true);
-    int range_bins = 6848;
+    int range_bins = raw_data.cols - 11;
     fft_data = cv::Mat::zeros(N, range_bins, CV_32F);
 #pragma omp parallel
     for (int i = 0; i < N; ++i) {
@@ -124,7 +125,11 @@ void callback(const sensor_msgs::ImageConstPtr & msg) {
     float cart_resolution = 0.25;
     int cart_pixel_width = 1000;
     bool interpolate_crossover = true;
-    float radar_resolution = 0.04381;
+    float radar_resolution = 0.0596;
+    double t = msg->header.stamp.toSec();;
+    if (t > radar_upgrade_time) {
+        radar_resolution = 0.04381;
+    }
     radar_polar_to_cartesian(azimuths, polar_img, radar_resolution, cart_resolution, cart_pixel_width,
         interpolate_crossover, cart_img);
 	// Convert to cartesian
