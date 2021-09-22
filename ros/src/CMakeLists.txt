@@ -25,7 +25,7 @@ find_package(catkin REQUIRED COMPONENTS
   turtlesim
 )
 
-find_package(OpenCV 3.3.1 REQUIRED)
+find_package(OpenCV REQUIRED)
 find_package(OpenMP REQUIRED)
 
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")

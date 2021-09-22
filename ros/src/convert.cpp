@@ -15,7 +15,7 @@ void load_radar(cv::Mat raw_data, std::vector<int64_t> &timestamps, std::vector<
     timestamps = std::vector<int64_t>(N, 0);
     azimuths = std::vector<float>(N, 0);
     valid = std::vector<bool>(N, true);
-    int range_bins = 3360;
+    int range_bins = 6848;
     fft_data = cv::Mat::zeros(N, range_bins, CV_32F);
 #pragma omp parallel
     for (int i = 0; i < N; ++i) {
