@@ -95,7 +95,10 @@ void FFTDataHandler(const FFTDataPtr_t& data)
 				std::fstream fout;
 				fout.open(fname, std::ios_base::out);
 				if (fout.is_open()) {
-					fout << header.stamp.sec;
+                    int64_t time = data->NTPSeconds;
+                    time *= 1000000;
+                    time += data->NTPSplitSeconds / 1000;
+					fout << time;
 				}
 				
 			}
